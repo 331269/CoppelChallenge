@@ -1,0 +1,22 @@
+artifact_path: file:///C:/Users/cleme/OneDrive/Documentos/ChallengeCoppel/CoppelChallenge/src/mlruns/0/models/m-649ee707bd56456d83027ccc732a75d3/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.7.1
+mlflow_version: 3.1.4
+model_id: m-649ee707bd56456d83027ccc732a75d3
+model_size_bytes: 376607
+model_uuid: m-649ee707bd56456d83027ccc732a75d3
+prompts: null
+run_id: c0e453fa338047acb6c25ec5c941df4f
+utc_time_created: '2025-07-23 18:28:27.485774'

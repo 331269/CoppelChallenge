@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/cleme/OneDrive/Documentos/ChallengeCoppel/CoppelChallenge/src/mlruns/0/models/m-cb4f276265f548a5823990714739c527/artifacts
+creation_timestamp: 1753295299238
+experiment_id: '0'
+last_updated_timestamp: 1753295302620
+model_id: m-cb4f276265f548a5823990714739c527
+model_type: null
+name: model
+source_run_id: ef0abd146339425a8e9af37cd00d06bf
+status: 2
+status_message: null

@@ -16,8 +16,8 @@ def gold_table(dataframe):
     CREATE TABLE IF NOT EXISTS ventas_gold (
         Quantity REAL,
         total REAL,
-        Target_90Days INTEGER
-        regroup_country TEXT,
+        Target_90Days INTEGER,
+        regroup_country TEXT
     );
     ''')
 

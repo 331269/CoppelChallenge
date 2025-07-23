@@ -1,1 +1,0 @@
-from transform_silver_functions import SilverClass

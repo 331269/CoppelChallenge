@@ -1,6 +1,10 @@
 import sqlite3
 import pandas as pd
 
+# #['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'InvoiceDate',
+#        'UnitPrice', 'CustomerID', 'Country', 'DateColumn',
+#        'total_price_per_item'],
+
 def silver_table(dataframe):
     # Crear conexión a base de datos (si no existe, se crea el archivo)
     conn = sqlite3.connect('coppelchallenge.db')
@@ -12,14 +16,16 @@ def silver_table(dataframe):
     cursor.execute('''
         
     CREATE TABLE IF NOT EXISTS ventas_silver (
+        InvoiceNo TEXT,
+        StockCode TEXT,
+        Description TEXT,
+        Quantity REAL,
+        InvoiceDate TEXT,
+        UnitPrice REAL,
         CustomerID TEXT,
-        DateColumn TEXT,
-        Quantity INTEGER,
-        total REAL,
         Country TEXT,
-        NextPurchaseDate TEXT,
-        days_since_last_purchase INTEGER,
-        Target_90Days INTEGER
+        DateColumn TEXT,
+        total_price_per_item REAL
     );
     ''')
 

@@ -1,6 +1,6 @@
-from bring_silver import silver_dataframe
-from transform_gold_functions import GoldClass
-from sending_gold import gold_table
+from gold.bring_silver import silver_dataframe
+from gold.transform_gold_functions import GoldClass
+from gold.sending_gold import gold_table
 
 def running_all_gold():
     gold = silver_dataframe()

@@ -1,6 +1,6 @@
-from transform_silver_functions import SilverClass
-from bring_bronze import bronze_dataframe
-from sending_silver import silver_table
+from silver.transform_silver_functions import SilverClass
+from silver.bring_bronze import bronze_dataframe
+from silver.sending_silver import silver_table
 
 def running_all_silver():
     silver = bronze_dataframe()

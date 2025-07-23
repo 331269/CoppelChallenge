@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/cleme/OneDrive/Documentos/ChallengeCoppel/CoppelChallenge/src/mlruns/0/217416051f1f465c898aa4cd90d7d182/artifacts
+end_time: 1753295312741
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 217416051f1f465c898aa4cd90d7d182
+run_name: best_model_test
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1753295310007
+status: 3
+tags: []
+user_id: cleme
