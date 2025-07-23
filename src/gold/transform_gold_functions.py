@@ -17,12 +17,10 @@ class GoldClass:
 
 
         # We need to drop the null Customer because we can´t track the correct ID if it´s null
-
-
         grouped_df = grouped_df[grouped_df['CustomerID']!='0']
         grouped_df.rename({'total_price_per_item':'total'}, axis=1, inplace=True)
         grouped_df['DateColumn'] = pd.to_datetime(grouped_df['DateColumn'], format='%d-%m-%Y')
-        grouped_df=grouped_df.sort_values(['CustomerID', 'DateColumn'])
+        grouped_df = grouped_df.sort_values(['CustomerID', 'DateColumn'])
 
         return grouped_df
     
