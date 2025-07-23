@@ -8,9 +8,6 @@ def main():
 
     model = complete_training()
 
-    
-
-
 
 
 if __name__ == "__main__":
