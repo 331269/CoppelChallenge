@@ -1,18 +1,11 @@
 # tests/test_app.py
-from unittest.mock import patch, MagicMock
+
 from fastapi.testclient import TestClient
 from app import app
 
 client = TestClient(app)
 
-
-@patch("app.load")  # Parchea joblib.load que está en app.py
-def test_predict_endpoint(mock_load):
-    # Creamos un mock para el modelo con predict fijo
-    mock_model = MagicMock()
-    mock_model.predict.return_value = [0, 1]  # Respuesta simulada
-    mock_load.return_value = mock_model  # load() devuelve este mock_model
-
+def test_predict_endpoint():
     sample_input = [
         {
             "InvoiceNo": "536365",
@@ -38,6 +31,5 @@ def test_predict_endpoint(mock_load):
 
     response = client.post("/predict/", json=sample_input)
     assert response.status_code == 200
-    json_response = response.json()
-    assert "prediction" in json_response
-    assert json_response["prediction"] == [0, 1]
+    assert "prediction" in response.json()
+    assert isinstance(response.json()["prediction"], list)

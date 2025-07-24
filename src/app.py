@@ -12,8 +12,12 @@ import sqlite3
 
 app = FastAPI()
 
-# Cargar el modelo
-loaded_model = load('model.pkl')
+
+def load_model():
+    return load('model.pkl')
+
+
+loaded_model = load_model()
 
 
 # Definir el modelo de entrada
