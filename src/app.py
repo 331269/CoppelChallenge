@@ -9,12 +9,21 @@ import uvicorn
 from fastapi.responses import RedirectResponse
 from typing import List, Optional
 import sqlite3
+import os
+# from joblib import load
 
 app = FastAPI()
 
 
+# def load_model():
+#     return load('src/model.pkl')
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 def load_model():
-    return load('src/model.pkl')
+    model_path = os.path.join(BASE_DIR, 'model.pkl')
+    return load(model_path)
 
 
 loaded_model = load_model()
