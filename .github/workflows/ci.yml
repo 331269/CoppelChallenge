@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - 'challenge'   # cualquier branch
+      - '*'   # cualquier branch
 
 jobs:
   test_and_build:
@@ -23,6 +23,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r src/requirements.txt
         pip install pytest
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$PWD/src" >> $GITHUB_ENV
+
 
     - name: Run tests
       run: |
