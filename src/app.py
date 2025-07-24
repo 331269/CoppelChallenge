@@ -65,10 +65,11 @@ def receive_data(data: List[Data]):
     # Transformación Gold
     gold_class = GoldClass(df_silver)
     df_gold = gold_class.grouping(df_silver)
-
     # Preparación para predicción
-    for_train_df = df_gold[['Quantity', 'total', 'Country']].copy()
+    for_train_df = df_gold[['Quantity',
+                            'total', 'Country', 'CustomerID']].copy()
 
+    for_train_df.set_index('CustomerID', inplace=True)
     # Renombrar columna 'Country' a 'regroup_country'
     for_train_df.rename(columns={'Country': 'regroup_country'}, inplace=True)
 
@@ -84,11 +85,18 @@ def receive_data(data: List[Data]):
     predictions = loaded_model.predict(for_train_df)
 
     for_train_df['predictions'] = predictions
+    for_train_df.reset_index(inplace=True)
+    for_train_df['CustomerID'] = for_train_df[
+        'CustomerID'].astype(int).astype(str)
+    for_train_df['fecha_procesamiento'] = pd.Timestamp.now()
+    for_train_df = for_train_df[['Quantity',
+                                 'total', 'regroup_country', 'predictions',
+                                 'CustomerID', 'fecha_procesamiento']]
     for_train_df.to_sql('outputs_table', conn, if_exists='append', index=False)
     print('outputs sent')
 
     return {
-        "prediction": predictions.tolist()
+        "data": for_train_df.to_dict(orient="records")
     }
 
 

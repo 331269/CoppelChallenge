@@ -14,7 +14,9 @@ def outputs():
         Quantity TEXT,
         total TEXT,
         regroup_country TEXT,
-        predictions INTEGER
+        predictions INTEGER,
+        CustomerID TEXT,
+        fecha_procesamiento TEXT
     );
 
     ''')

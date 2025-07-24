@@ -1,5 +1,3 @@
-# tests/test_app.py
-
 from fastapi.testclient import TestClient
 from app import app
 
@@ -32,5 +30,11 @@ def test_predict_endpoint():
 
     response = client.post("/predict/", json=sample_input)
     assert response.status_code == 200
-    assert "prediction" in response.json()
-    assert isinstance(response.json()["prediction"], list)
+    json_response = response.json()
+    assert "data" in json_response
+    assert isinstance(json_response["data"], list)
+    # Opcional: verificar que cada item tenga las columnas esperadas
+    expected_keys = {"Quantity", "total", "regroup_country",
+                     "predictions", "CustomerID", "fecha_procesamiento"}
+    for record in json_response["data"]:
+        assert expected_keys.issubset(record.keys())
