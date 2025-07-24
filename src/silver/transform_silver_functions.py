@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class SilverClass:
 
     def __init__(self, dataframe):
@@ -9,18 +10,19 @@ class SilverClass:
         df['CustomerID'] = df['CustomerID'].fillna(0)
         df['CustomerID'] = df['CustomerID'].astype('int').astype('str')
         return df
-    
+
     def handling_time(self, df):
-        df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'], format='%m/%d/%Y %H:%M')
+        df['InvoiceDate'] = pd.to_datetime(
+            df['InvoiceDate'], format='%m/%d/%Y %H:%M')
 
         # Format to 'd-m-y' as string
         df['DateColumn'] = df['InvoiceDate'].dt.strftime('%d-%m-%Y')
         return df
-    
+
     def filtering(self, df):
         df = df[~df['InvoiceNo'].str.startswith('C', na=False)]
-        df = df[df['Quantity']>0]
-        df = df[df['UnitPrice'] !=0]
+        df = df[df['Quantity'] > 0]
+        df = df[df['UnitPrice'] != 0]
 
         return df
 
@@ -33,9 +35,3 @@ class SilverClass:
         df['total_price_per_item'] = df['Quantity']*df['UnitPrice']
 
         return df
-
-
-
-
-
-        

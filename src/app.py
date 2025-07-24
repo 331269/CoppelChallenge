@@ -40,7 +40,7 @@ def receive_data(data: List[Data]):
     conn = sqlite3.connect('coppelchallenge.db')
 
     # Crear cursor para ejecutar queries
-    cursor = conn.cursor()
+    # cursor = conn.cursor()
 
     df = pd.DataFrame([item.dict() for item in data])
     df.to_sql('ventas_bronze', conn, if_exists='append', index=False)
@@ -67,7 +67,8 @@ def receive_data(data: List[Data]):
         for_train_df['regroup_country'] = np.where(
             for_train_df['regroup_country'] == 'United Kingdom', 1, 0)
     else:
-        return {"error": "No se encontró la columna 'regroup_country' en df_gold"}
+        return {"error": "No"
+                "se encontró la columna 'regroup_country' en df_gold"}
 
     # Realizar predicción
     predictions = loaded_model.predict(for_train_df)

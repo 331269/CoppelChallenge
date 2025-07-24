@@ -1,7 +1,7 @@
 import sqlite3
-import pandas as pd
 
 # ['Quantity', 'total', 'Target_90Days', 'regroup_country']
+
 
 def gold_table(dataframe):
     # Crear conexión a base de datos (si no existe, se crea el archivo)
@@ -12,7 +12,6 @@ def gold_table(dataframe):
 
     # Crear tabla (si no existe)
     cursor.execute('''
-        
     CREATE TABLE IF NOT EXISTS ventas_gold (
         Quantity REAL,
         total REAL,
