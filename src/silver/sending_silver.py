@@ -1,9 +1,9 @@
 import sqlite3
-import pandas as pd
 
 # #['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'InvoiceDate',
 #        'UnitPrice', 'CustomerID', 'Country', 'DateColumn',
 #        'total_price_per_item'],
+
 
 def silver_table(dataframe):
     # Crear conexión a base de datos (si no existe, se crea el archivo)
@@ -14,7 +14,6 @@ def silver_table(dataframe):
 
     # Crear tabla (si no existe)
     cursor.execute('''
-        
     CREATE TABLE IF NOT EXISTS ventas_silver (
         InvoiceNo TEXT,
         StockCode TEXT,

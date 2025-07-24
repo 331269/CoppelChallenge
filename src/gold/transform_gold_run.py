@@ -2,6 +2,7 @@ from gold.bring_silver import silver_dataframe
 from gold.transform_gold_functions import GoldClass
 from gold.sending_gold import gold_table
 
+
 def running_all_gold():
     gold = silver_dataframe()
 
@@ -10,4 +11,3 @@ def running_all_gold():
     df_silver = gold_class.all_gold_functions()
 
     gold_table(df_silver)
-

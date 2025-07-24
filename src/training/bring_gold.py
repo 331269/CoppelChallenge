@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 
+
 def gold_dataframe():
 
     conn = sqlite3.connect('coppelchallenge.db')
