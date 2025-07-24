@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 from gold.transform_gold_functions import GoldClass
+from pytest import approx
 # ajusta ruta si es necesario
 
 
@@ -32,7 +33,8 @@ def test_grouping(silver_data):
     # Quantity y total sumados correctamente
     assert grouped.loc[
         grouped['CustomerID'] == '12345', 'Quantity'].sum() == 15
-    assert grouped.loc[grouped['CustomerID'] == '12345', 'total'].sum() == 37.5
+    assert grouped.loc[grouped['CustomerID'] == '12345',
+                       'total'].sum() == approx(37.5)
 
 
 def test_creating_target(silver_data):
