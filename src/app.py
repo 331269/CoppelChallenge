@@ -34,7 +34,7 @@ def redirect_to_docs():
 
 
 @app.post("/predict/")
-def receive_invoices(data: List[Data]):
+def receive_data(data: List[Data]):
     # Convertir lista de Data a DataFrame
 
     conn = sqlite3.connect('coppelchallenge.db')
@@ -83,4 +83,4 @@ def receive_invoices(data: List[Data]):
 
 if __name__ == "__main__":
 
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

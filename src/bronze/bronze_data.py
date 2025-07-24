@@ -1,8 +1,12 @@
 import sqlite3
 import pandas as pd
 
+
 def bronze_table():
-    dataframe = pd.read_csv('C:/Users/cleme/OneDrive/Documentos/ChallengeCoppel/CoppelChallenge/transacciones_retail.csv',  encoding="latin1")
+    dataframe = pd.read_csv(('C:/Users/cleme/OneDrive'
+                             '/Documentos/ChallengeCoppel'
+                             '/CoppelChallenge/'
+                             'transacciones_retail.csv'),  encoding="latin1")
     # Crear conexión a base de datos (si no existe, se crea el archivo)
     conn = sqlite3.connect('coppelchallenge.db')
 

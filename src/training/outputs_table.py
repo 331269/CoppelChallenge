@@ -14,7 +14,7 @@ def outputs():
         Quantity TEXT,
         total TEXT,
         regroup_country TEXT,
-        prediction INTEGER,
+        prediction INTEGER
     );
 
     ''')
