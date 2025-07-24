@@ -1,18 +1,34 @@
 import sqlite3
-
-# #['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'InvoiceDate',
-#        'UnitPrice', 'CustomerID', 'Country', 'DateColumn',
-#        'total_price_per_item'],
+import pandas as pd
 
 
-def silver_table(dataframe):
-    # Crear conexión a base de datos (si no existe, se crea el archivo)
+def silver_table(dataframe: pd.DataFrame) -> None:
+    """
+    Inserta los datos contenidos en el DataFrame proporcionado en la tabla
+    'ventas_silver' dentro de la base de datos SQLite 'coppelchallenge.db'.
+
+    La función crea la tabla si no existe, con las columnas correspondientes
+    a los datos de Silver layer.
+
+    Args:
+        dataframe (pd.DataFrame): DataFrame que contiene los datos a insertar.
+            Debe incluir las columnas:
+            ['InvoiceNo', 'StockCode', 'Description',
+            'Quantity', 'InvoiceDate',
+             'UnitPrice', 'CustomerID', 'Country', 'DateColumn',
+             'total_price_per_item'].
+
+    Returns:
+        None
+
+    Raises:
+        sqlite3.Error: Si ocurre algún error al
+        conectar o ejecutar la consulta SQL.
+    """
     conn = sqlite3.connect('coppelchallenge.db')
 
-    # Crear cursor para ejecutar queries
     cursor = conn.cursor()
 
-    # Crear tabla (si no existe)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS ventas_silver (
         InvoiceNo TEXT,
@@ -28,5 +44,6 @@ def silver_table(dataframe):
     );
     ''')
 
-    # Insertar el DataFrame completo en la tabla 'ventas'
     dataframe.to_sql('ventas_silver', conn, if_exists='append', index=False)
+
+    conn.close()

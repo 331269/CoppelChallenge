@@ -26,3 +26,4 @@ __pycache__
 .ipynb_checkpoints
 OneDrive/
 *.db
+*.pytest_cache

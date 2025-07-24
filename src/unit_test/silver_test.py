@@ -1,7 +1,6 @@
 import pytest
 import pandas as pd
 from silver.transform_silver_functions import SilverClass
-# Ajusta la ruta si es necesario
 
 
 @pytest.fixture

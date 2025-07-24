@@ -1,20 +1,31 @@
 import sqlite3
 
 
-def outputs():
-    # Crear conexión a base de datos (si no existe, se crea el archivo)
-    conn = sqlite3.connect('coppelchallenge.db')
+def outputs() -> None:
+    """
+    Crea la tabla 'outputs_table'
+    en la base de datos SQLite 'coppelchallenge.db' si no existe.
+    La tabla contiene columnas para los resultados del modelo y metadatos.
 
-    # Crear cursor para ejecutar queries
+    No recibe parámetros ni retorna valor.
+
+    Raises:
+        sqlite3.Error: Si ocurre algún
+        error al conectar o ejecutar la consulta SQL.
+    """
+    conn = sqlite3.connect('coppelchallenge.db')
     cursor = conn.cursor()
 
-    # Crear tabla (si no existe)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS outputs_table (
         Quantity TEXT,
         total TEXT,
         regroup_country TEXT,
-        predictions INTEGER
+        predictions INTEGER,
+        CustomerID TEXT,
+        fecha_procesamiento TEXT
     );
-
     ''')
+
+    conn.commit()
+    conn.close()
