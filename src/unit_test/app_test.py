@@ -5,6 +5,7 @@ from app import app
 
 client = TestClient(app)
 
+
 def test_predict_endpoint():
     sample_input = [
         {

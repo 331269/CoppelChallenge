@@ -14,7 +14,7 @@ app = FastAPI()
 
 
 def load_model():
-    return load('model.pkl')
+    return load('src/model.pkl')
 
 
 loaded_model = load_model()

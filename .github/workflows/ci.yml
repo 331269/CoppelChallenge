@@ -23,16 +23,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r src/requirements.txt
         pip install pytest
+
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PWD/src" >> $GITHUB_ENV
 
+    - name: List files root
+      run: ls -la
+
+    - name: List files src
+      run: ls -la src
 
     - name: Run tests
-      run: |
-        pytest
+      working-directory: src
+      run: pytest
 
     - name: Build Docker image
-      run: |
-        docker build -t coppelchallenge:latest .
-
-
+      run: docker build -t coppelchallenge:latest .
