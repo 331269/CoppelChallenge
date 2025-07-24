@@ -34,4 +34,3 @@ def test_all_functions(raw_data):
 
     # Verifica que el cálculo de total_price_per_item sea correcto
     assert result_df['total_price_per_item'].tolist() == [25.0, 9.0]
-
