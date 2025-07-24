@@ -15,9 +15,6 @@ import os
 app = FastAPI()
 
 
-# def load_model():
-#     return load('src/model.pkl')
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
