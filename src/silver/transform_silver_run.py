@@ -11,5 +11,3 @@ def running_all_silver():
     df_silver = sil_class.all_functions()
 
     silver_table(df_silver)
-
-
