@@ -38,4 +38,4 @@ jobs:
       run: pytest
 
     - name: Build Docker image
-      run: docker build -t coppelchallenge:latest .
+      run: docker build -t coppelchallenge:latest -f src/Dockerfile .
