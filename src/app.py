@@ -10,6 +10,18 @@ from fastapi.responses import RedirectResponse
 from typing import List, Optional, Dict, Any
 import sqlite3
 import os
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("loggings"),  # guarda en archivo
+        logging.StreamHandler()               # sigue mostrando en terminal
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -74,6 +86,7 @@ def receive_data(data: List[Data]) -> Dict[str, Any]:
         Dict[str, Any]: Diccionario con
         clave "data" y valor lista de registros con predicciones.
     """
+    logger.info("Datos recibidos para predicción")
     conn = sqlite3.connect('coppelchallenge.db')
 
     # Convertir lista de Pydantic models a DataFrame
