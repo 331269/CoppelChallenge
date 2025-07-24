@@ -1,12 +1,16 @@
-# tests/test_app.py
-
+from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from app import app
 
 client = TestClient(app)
 
+@patch('app.load')  # mockeamos joblib.load que está usado en app.py
+def test_predict_endpoint(mock_load):
+    # Crear un mock para el modelo con método predict
+    mock_model = MagicMock()
+    mock_model.predict.return_value = [1, 0]  # ejemplo de predicciones
+    mock_load.return_value = mock_model  # load() devolverá el mock_model
 
-def test_predict_endpoint():
     sample_input = [
         {
             "InvoiceNo": "536365",
