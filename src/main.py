@@ -4,10 +4,13 @@ from complete_medallion.complete_medallion_all import (
 from training.all_training import complete_training
 
 
-def main():
-
+def main() -> None:
+    """
+    Función principal para ejecutar el pipeline completo:
+    - Ejecuta la ejecución completa del medallion (bronze, silver, gold).
+    - Ejecuta el entrenamiento completo del modelo.
+    """
     running_complete_medallion()
-
     complete_training()
 
 

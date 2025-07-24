@@ -7,18 +7,22 @@ import numpy as np
 from joblib import load
 import uvicorn
 from fastapi.responses import RedirectResponse
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import sqlite3
 import os
-# from joblib import load
 
 app = FastAPI()
-
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_model():
+def load_model() -> Any:
+    """
+    Carga el modelo previamente entrenado desde un archivo .pkl.
+
+    Returns:
+        Modelo cargado con joblib.load.
+    """
     model_path = os.path.join(BASE_DIR, 'model.pkl')
     return load(model_path)
 
@@ -26,8 +30,10 @@ def load_model():
 loaded_model = load_model()
 
 
-# Definir el modelo de entrada
 class Data(BaseModel):
+    """
+    Modelo Pydantic para validar y tipar la entrada JSON al endpoint /predict/.
+    """
     InvoiceNo: str
     StockCode: str
     Description: str
@@ -39,25 +45,44 @@ class Data(BaseModel):
 
 
 @app.get("/", include_in_schema=False)
-def redirect_to_docs():
+def redirect_to_docs() -> RedirectResponse:
+    """
+    Redirecciona la raíz '/' a la documentación automática Swagger UI.
+    """
     return RedirectResponse(url="/docs")
 
 
 @app.post("/predict/")
-def receive_data(data: List[Data]):
-    # Convertir lista de Data a DataFrame
+def receive_data(data: List[Data]) -> Dict[str, Any]:
+    """
+    Recibe una lista de objetos Data, los procesa y genera predicciones.
 
+    Flujo:
+    - Convierte la lista en DataFrame.
+    - Inserta datos en tabla 'ventas_bronze'.
+    - Aplica transformaciones Silver y guarda en 'ventas_silver'.
+    - Aplica transformaciones Gold.
+    - Prepara DataFrame para predicción.
+    - Realiza predicción con el modelo cargado.
+    - Guarda resultados en 'outputs_table'.
+    - Retorna el DataFrame resultante en formato JSON.
+
+    Args:
+        data (List[Data]): Lista de objetos con la información de ventas.
+
+    Returns:
+        Dict[str, Any]: Diccionario con
+        clave "data" y valor lista de registros con predicciones.
+    """
     conn = sqlite3.connect('coppelchallenge.db')
 
-    # Crear cursor para ejecutar queries
-    # cursor = conn.cursor()
-
+    # Convertir lista de Pydantic models a DataFrame
     df = pd.DataFrame([item.dict() for item in data])
+
+    # Guardar datos crudos en tabla Bronze
     df.to_sql('ventas_bronze', conn, if_exists='append', index=False)
 
-    # No reasignar columnas, ya vienen bien con item.dict()
-
-    # Transformación Silver
+    # Transformación Silver y guardado
     sil_class = SilverClass(df)
     df_silver = sil_class.all_functions()
     df_silver.to_sql('ventas_silver', conn, if_exists='append', index=False)
@@ -65,34 +90,36 @@ def receive_data(data: List[Data]):
     # Transformación Gold
     gold_class = GoldClass(df_silver)
     df_gold = gold_class.grouping(df_silver)
-    # Preparación para predicción
+
+    # Preparar dataframe para predicción
     for_train_df = df_gold[['Quantity',
                             'total', 'Country', 'CustomerID']].copy()
-
     for_train_df.set_index('CustomerID', inplace=True)
-    # Renombrar columna 'Country' a 'regroup_country'
     for_train_df.rename(columns={'Country': 'regroup_country'}, inplace=True)
 
-    # Verificar que exista 'regroup_country'
     if 'regroup_country' in for_train_df.columns:
         for_train_df['regroup_country'] = np.where(
             for_train_df['regroup_country'] == 'United Kingdom', 1, 0)
     else:
-        return {"error": "No"
-                "se encontró la columna 'regroup_country' en df_gold"}
+        return {"error": "No se encontró la"
+                "columna 'regroup_country' en df_gold"}
 
-    # Realizar predicción
+    # Predicción
     predictions = loaded_model.predict(for_train_df)
-
     for_train_df['predictions'] = predictions
     for_train_df.reset_index(inplace=True)
+
+    # Ajustar tipo CustomerID y agregar fecha procesamiento
     for_train_df['CustomerID'] = for_train_df[
         'CustomerID'].astype(int).astype(str)
     for_train_df['fecha_procesamiento'] = pd.Timestamp.now()
-    for_train_df = for_train_df[['Quantity',
-                                 'total', 'regroup_country', 'predictions',
+
+    # Seleccionar columnas finales y guardar resultados
+    for_train_df = for_train_df[['Quantity', 'total',
+                                 'regroup_country', 'predictions',
                                  'CustomerID', 'fecha_procesamiento']]
     for_train_df.to_sql('outputs_table', conn, if_exists='append', index=False)
+
     print('outputs sent')
 
     return {
@@ -101,5 +128,4 @@ def receive_data(data: List[Data]):
 
 
 if __name__ == "__main__":
-
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

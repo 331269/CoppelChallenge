@@ -1,16 +1,31 @@
 import sqlite3
+import pandas as pd
 
-# ['Quantity', 'total', 'Target_90Days', 'regroup_country']
 
+def gold_table(dataframe: pd.DataFrame) -> None:
+    """
+    Inserta los datos contenidos en el DataFrame proporcionado en la tabla
+    'ventas_gold' dentro de la base de datos SQLite 'coppelchallenge.db'.
 
-def gold_table(dataframe):
-    # Crear conexión a base de datos (si no existe, se crea el archivo)
+    La función crea la tabla si no existe, con las columnas:
+    Quantity, total, Target_90Days y regroup_country.
+
+    Args:
+        dataframe (pd.DataFrame): DataFrame que contiene los datos a insertar.
+            Debe incluir las columnas:
+            'Quantity', 'total', 'Target_90Days', 'regroup_country'.
+
+    Returns:
+        None
+
+    Raises:
+        sqlite3.Error: Si ocurre
+        algún error al conectar o ejecutar la consulta SQL.
+    """
     conn = sqlite3.connect('coppelchallenge.db')
 
-    # Crear cursor para ejecutar queries
     cursor = conn.cursor()
 
-    # Crear tabla (si no existe)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS ventas_gold (
         Quantity REAL,
@@ -20,5 +35,6 @@ def gold_table(dataframe):
     );
     ''')
 
-    # Insertar el DataFrame completo en la tabla 'ventas'
     dataframe.to_sql('ventas_gold', conn, if_exists='append', index=False)
+
+    conn.close()

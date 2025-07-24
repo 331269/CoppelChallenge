@@ -5,6 +5,14 @@ client = TestClient(app)
 
 
 def test_predict_endpoint():
+    """
+    Test para el endpoint /predict/ de la API.
+    Envía una lista de datos de entrada y verifica que:
+    - La respuesta sea status 200.
+    - La respuesta contenga una clave 'data'.
+    - 'data' sea una lista.
+    - Cada elemento de 'data' contenga las columnas esperadas.
+    """
     sample_input = [
         {
             "InvoiceNo": "536365",
@@ -30,11 +38,22 @@ def test_predict_endpoint():
 
     response = client.post("/predict/", json=sample_input)
     assert response.status_code == 200
+
     json_response = response.json()
+
+    # Verificar que la respuesta contenga 'data' y que sea una lista
     assert "data" in json_response
     assert isinstance(json_response["data"], list)
-    # Opcional: verificar que cada item tenga las columnas esperadas
-    expected_keys = {"Quantity", "total", "regroup_country",
-                     "predictions", "CustomerID", "fecha_procesamiento"}
+
+    # Verificar que cada registro tenga las claves esperadas
+    expected_keys = {
+        "Quantity",
+        "total",
+        "regroup_country",
+        "predictions",
+        "CustomerID",
+        "fecha_procesamiento"
+    }
+
     for record in json_response["data"]:
         assert expected_keys.issubset(record.keys())
