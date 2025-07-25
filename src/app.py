@@ -11,6 +11,7 @@ from typing import List, Optional, Dict, Any
 import sqlite3
 import os
 import logging
+import json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,6 +23,14 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+with open("quantiles.json", "r") as f:
+    quan = json.load(f)
+
+lower_quantity = quan['Quantity_lower']
+upper_quantity = quan['Quantity_upper']
+lower_total = quan['total_lower']
+upper_total = quan['total_upper']
 
 app = FastAPI()
 
@@ -116,6 +125,11 @@ def receive_data(data: List[Data]) -> Dict[str, Any]:
     else:
         return {"error": "No se encontró la"
                 "columna 'regroup_country' en df_gold"}
+
+    for_train_df['Quantity'].clip(lower=lower_quantity,
+                                  upper=upper_quantity, inplace=True)
+    for_train_df['total'].clip(lower=lower_total,
+                               upper=upper_total, inplace=True)
 
     # Predicción
     predictions = loaded_model.predict(for_train_df)

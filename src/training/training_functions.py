@@ -107,7 +107,7 @@ class TrainingClass:
         X_val[column].clip(lower=lower_limit,
                            upper=upper_limit, inplace=True)
 
-        return X_train, X_test, X_val
+        return X_train, X_test, X_val, lower_limit, upper_limit
 
     def training_dataframes(
         self
@@ -131,9 +131,24 @@ class TrainingClass:
          y_train) = self.train_test_val(for_train_df)
         columns = ['Quantity', 'total']
 
+        dict_quan = {}
+
         for column in columns:
             (X_train,
-             X_val, X_test) = self.quantile_inputation(X_train,
-                                                       X_test, X_val, column)
+             X_val, X_test,
+             lower_limit,
+             upper_limit
+             ) = self.quantile_inputation(X_train,
+                                          X_test,
+                                          X_val,
+                                          column)
+            dict_quan[f"{column}_lower"] = lower_limit
+            dict_quan[f"{column}_upper"] = upper_limit
 
-        return X_train, X_val, X_test, y_val, y_test, y_train
+        return (X_train,
+                X_val,
+                X_test,
+                y_val,
+                y_test,
+                y_train,
+                dict_quan)
