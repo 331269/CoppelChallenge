@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.app &mdash; CoppelChallenge Documentation 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CoppelChallenge Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CoppelChallenge</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CoppelChallenge Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.app</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.app</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">silver.transform_silver_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SilverClass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gold.transform_gold_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">GoldClass</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">joblib</span><span class="w"> </span><span class="kn">import</span> <span class="n">load</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedirectResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> [</span><span class="si">%(levelname)s</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">handlers</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s2">&quot;loggings&quot;</span><span class="p">),</span>  <span class="c1"># guarda en archivo</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>               <span class="c1"># sigue mostrando en terminal</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="n">BASE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="load_model">
+<a class="viewcode-back" href="../../src.html#src.app.load_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Carga el modelo previamente entrenado desde un archivo .pkl.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Modelo cargado con joblib.load.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;model.pkl&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span></div>
+
+
+
+<span class="n">loaded_model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Data">
+<a class="viewcode-back" href="../../src.html#src.app.Data">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Data</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo Pydantic para validar y tipar la entrada JSON al endpoint /predict/.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">InvoiceNo</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">StockCode</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">Description</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">Quantity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">InvoiceDate</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">UnitPrice</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">CustomerID</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="n">Country</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+
+<div class="viewcode-block" id="redirect_to_docs">
+<a class="viewcode-back" href="../../src.html#src.app.redirect_to_docs">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">redirect_to_docs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">RedirectResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Redirecciona la raíz &#39;/&#39; a la documentación automática Swagger UI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">RedirectResponse</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/docs&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="receive_data">
+<a class="viewcode-back" href="../../src.html#src.app.receive_data">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/predict/&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">receive_data</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Data</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recibe una lista de objetos Data, los procesa y genera predicciones.</span>
+
+<span class="sd">    Flujo:</span>
+<span class="sd">    - Convierte la lista en DataFrame.</span>
+<span class="sd">    - Inserta datos en tabla &#39;ventas_bronze&#39;.</span>
+<span class="sd">    - Aplica transformaciones Silver y guarda en &#39;ventas_silver&#39;.</span>
+<span class="sd">    - Aplica transformaciones Gold.</span>
+<span class="sd">    - Prepara DataFrame para predicción.</span>
+<span class="sd">    - Realiza predicción con el modelo cargado.</span>
+<span class="sd">    - Guarda resultados en &#39;outputs_table&#39;.</span>
+<span class="sd">    - Retorna el DataFrame resultante en formato JSON.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (List[Data]): Lista de objetos con la información de ventas.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict[str, Any]: Diccionario con</span>
+<span class="sd">        clave &quot;data&quot; y valor lista de registros con predicciones.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Datos recibidos para predicción&quot;</span><span class="p">)</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;coppelchallenge.db&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Convertir lista de Pydantic models a DataFrame</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">item</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">])</span>
+
+    <span class="c1"># Guardar datos crudos en tabla Bronze</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;ventas_bronze&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Transformación Silver y guardado</span>
+    <span class="n">sil_class</span> <span class="o">=</span> <span class="n">SilverClass</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">df_silver</span> <span class="o">=</span> <span class="n">sil_class</span><span class="o">.</span><span class="n">all_functions</span><span class="p">()</span>
+    <span class="n">df_silver</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;ventas_silver&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Transformación Gold</span>
+    <span class="n">gold_class</span> <span class="o">=</span> <span class="n">GoldClass</span><span class="p">(</span><span class="n">df_silver</span><span class="p">)</span>
+    <span class="n">df_gold</span> <span class="o">=</span> <span class="n">gold_class</span><span class="o">.</span><span class="n">grouping</span><span class="p">(</span><span class="n">df_silver</span><span class="p">)</span>
+
+    <span class="c1"># Preparar dataframe para predicción</span>
+    <span class="n">for_train_df</span> <span class="o">=</span> <span class="n">df_gold</span><span class="p">[[</span><span class="s1">&#39;Quantity&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;total&#39;</span><span class="p">,</span> <span class="s1">&#39;Country&#39;</span><span class="p">,</span> <span class="s1">&#39;CustomerID&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">for_train_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;CustomerID&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">for_train_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Country&#39;</span><span class="p">:</span> <span class="s1">&#39;regroup_country&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;regroup_country&#39;</span> <span class="ow">in</span> <span class="n">for_train_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">for_train_df</span><span class="p">[</span><span class="s1">&#39;regroup_country&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">for_train_df</span><span class="p">[</span><span class="s1">&#39;regroup_country&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;United Kingdom&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;No se encontró la&quot;</span>
+                <span class="s2">&quot;columna &#39;regroup_country&#39; en df_gold&quot;</span><span class="p">}</span>
+
+    <span class="c1"># Predicción</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">loaded_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">for_train_df</span><span class="p">)</span>
+    <span class="n">for_train_df</span><span class="p">[</span><span class="s1">&#39;predictions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span>
+    <span class="n">for_train_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Ajustar tipo CustomerID y agregar fecha procesamiento</span>
+    <span class="n">for_train_df</span><span class="p">[</span><span class="s1">&#39;CustomerID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">for_train_df</span><span class="p">[</span>
+        <span class="s1">&#39;CustomerID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">for_train_df</span><span class="p">[</span><span class="s1">&#39;fecha_procesamiento&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="c1"># Seleccionar columnas finales y guardar resultados</span>
+    <span class="n">for_train_df</span> <span class="o">=</span> <span class="n">for_train_df</span><span class="p">[[</span><span class="s1">&#39;Quantity&#39;</span><span class="p">,</span> <span class="s1">&#39;total&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;regroup_country&#39;</span><span class="p">,</span> <span class="s1">&#39;predictions&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;CustomerID&#39;</span><span class="p">,</span> <span class="s1">&#39;fecha_procesamiento&#39;</span><span class="p">]]</span>
+    <span class="n">for_train_df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;outputs_table&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;outputs sent&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">for_train_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;app:app&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Christian Luis Clemente Cortes.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
