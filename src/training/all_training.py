@@ -3,7 +3,6 @@ from training.model_training import trainer
 from training.bring_gold import gold_dataframe
 from training.outputs_table import outputs
 from typing import Any  # Ajusta según el tipo real de 'model'
-import json
 
 
 def complete_training() -> Any:
@@ -29,6 +28,4 @@ def complete_training() -> Any:
     model = trainer(X_train, X_val, X_test, y_val, y_test, y_train)
     outputs()
 
-    with open("quantiles.json", "w") as f:
-        json.dump(dict_quantiles, f)
     return model
