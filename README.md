@@ -137,4 +137,5 @@ pip install -r requirements.txt
 - Base de datos local: `coppelchallenge.db`
 - Modelo entrenado guardado como `model.pkl`
 - Cada vez que se usa la API se genera un logging
+- la tabla ventas_gold sólo se usa para el entrenamiento del modelo
 ---
