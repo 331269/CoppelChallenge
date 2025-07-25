@@ -1,6 +1,7 @@
 # 🛍️ CoppelChallenge
 
 Bienvenidos al proyecto del Challenge de Coppel, en este repositorio encontrarás toda la infraestructura del código, esto engloba el procesamiento del ETL para generar los datos crudos (bronze), filtrados (silver) y preparados para el entrenamiento del modelo de Machine Learning (gold). Así mismo, encontrarás el código con el cual se construye una API, la cual se explica más adelante.
+En cada Pull Request se llevan a cabo GitHub Actions los cuales contemplan Linting, Testing, Build de Docker y SonarCloud. Además, la documentación de todo el proyecto se realiza usando Sphinx.
 
 ---
 
@@ -135,5 +136,5 @@ pip install -r requirements.txt
 
 - Base de datos local: `coppelchallenge.db`
 - Modelo entrenado guardado como `model.pkl`
-
+- Cada vez que se usa la API se genera un logging
 ---
