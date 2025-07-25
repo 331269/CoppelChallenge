@@ -30,8 +30,8 @@ Finalmente el modelo seleccionado se guarda como un `model.pkl`.
 Recibe datos de transacciones, aplica los filtros hechos en bronze y silver para alimentar el modelo. El output final son las predicciones del modelo más las variables 'Quantity', 'total', 'regroup_country', 'predictions', 'CustomerID' y 'fecha_procesamiento' con formato json:
 
 La ingesta de datos sigue los siguientes pasos:
-```1. ingresar datos como json en el POST /predict/
-```
+1. ingresar datos como json en el POST /predict/
+
 * Ejemplo:
 
 📥 Entrada:
@@ -50,7 +50,7 @@ La ingesta de datos sigue los siguientes pasos:
 ]
 ```
 
-📤 Salida:
+📤 2. Salida:
 ```json
 {
   "data": [
@@ -83,6 +83,7 @@ La API corre completamente en Docker: cada vez que se haga un Pull Request, se l
 ```bash
 docker-compose up --build
 ```
+Se hace uso de un docker-decompose.yml (volume) para usar las bases de datos de manera local.
 
 Para usar el contenedor debe tomar en cuenta la siguiente línea:
 
